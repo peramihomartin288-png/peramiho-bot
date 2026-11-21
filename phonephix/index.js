@@ -147,6 +147,10 @@ async function runCommand(ctx) {
       await helpers.replyError('This command is only available to group admins.');
       return true;
     }
+    if (command.botAdminOnly === true && !ctx?.isBotGroupAdmin && !isOwner) {
+      await helpers.replyError('This command requires the bot to be a group admin.');
+      return true;
+    }
     if (command.groupOnly === true && !ctx?.isGroup) {
       await helpers.replyError('This command can only be used in groups.');
       return true;
