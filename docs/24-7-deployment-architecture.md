@@ -21,7 +21,7 @@ No hosting design can promise 100% uptime. The goal is automatic recovery, durab
 
 ## 24/7 deployment requirements
 
-1. Use an always-on VPS with enough RAM/CPU for Node.js, FFmpeg, Sharp, and peak message load.
+1. Use an always-on VPS with enough RAM/CPU for Node.js, FFmpeg, Sharp, and peak message load. Set PORT (for example 3000) so the health endpoints are exposed.
 2. Mount a persistent volume and set DATA_DIR to that mount. Back up the auth directory securely; test restore procedures.
 3. Run PM2 with ecosystem.config.js and configure PM2 startup, or use an equivalent systemd service.
 4. Configure automatic restart with bounded backoff. Avoid multiple replicas of the same WhatsApp session; duplicate sockets can cause session conflicts.
