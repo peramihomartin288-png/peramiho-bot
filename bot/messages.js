@@ -2162,6 +2162,7 @@ async function handleOneMessage({
         const requiresOwner = OWNER_COMMANDS.has(canonicalCommand) || registeredCommand?.ownerOnly === true;
         const requiresGroupAdmin = GROUP_ADMIN_COMMANDS.has(canonicalCommand) ||
             registeredCommand?.adminOnly === true || registeredCommand?.groupAdminOnly === true;
+        const requiresBotAdmin = registeredCommand?.botAdminOnly === true;
 
         if (requiresOwner) {
 
@@ -2235,6 +2236,19 @@ async function handleOneMessage({
             }
         }
 
+
+        let senderIsBotAdmin = false;
+        if (requiresBotAdmin) {
+            if (!isGroup) {
+                await sendAccessDenied(sock, from, msg, 'This command can only be used in groups.');
+                return;
+            }
+            senderIsBotAdmin = await isBotGroupAdmin(sock, store, from);
+            if (!senderIsBotAdmin && !senderIsOwner) {
+                await sendAccessDenied(sock, from, msg, 'This command requires the bot to be a group admin.');
+                return;
+            }
+        }
 
         /*
         |--------------------------------------------------------------------------
@@ -2360,6 +2374,9 @@ async function handleOneMessage({
 
             isGroupAdmin:
                 senderIsGroupAdmin,
+
+            isBotGroupAdmin:
+                senderIsBotAdmin,
 
             // Expose the command registry to commands such as .menu
             // and .help. Without this, .menu gets ctx.getCommands()
