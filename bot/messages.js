@@ -7,7 +7,7 @@ const Setting = require('../database/models/Setting');
 const Ban = require('../database/models/Ban');
 const Session = require('../database/models/Session');
 
-const { runCommand } = require('../phonephix/index');
+const { runCommand, getCommand } = require('../phonephix/index');
 
 // PHONEPHIX V2 hot-path caches: reduce repeated MongoDB reads.
 const SESSION_PHONE_CACHE = new Map();
@@ -2157,11 +2157,13 @@ async function handleOneMessage({
         |--------------------------------------------------------------------------
         */
 
-        if (
-            OWNER_COMMANDS.has(
-                command
-            )
-        ) {
+        const registeredCommand = getCommand(command);
+        const canonicalCommand = registeredCommand?.aliasOf || registeredCommand?.name || command;
+        const requiresOwner = OWNER_COMMANDS.has(canonicalCommand) || registeredCommand?.ownerOnly === true;
+        const requiresGroupAdmin = GROUP_ADMIN_COMMANDS.has(canonicalCommand) ||
+            registeredCommand?.adminOnly === true || registeredCommand?.groupAdminOnly === true;
+
+        if (requiresOwner) {
 
             if (!senderIsOwner) {
 
@@ -2187,11 +2189,7 @@ async function handleOneMessage({
             false;
 
 
-        if (
-            GROUP_ADMIN_COMMANDS.has(
-                command
-            )
-        ) {
+        if (requiresGroupAdmin) {
 
             if (!isGroup) {
 
