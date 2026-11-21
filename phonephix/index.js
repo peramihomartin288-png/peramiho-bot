@@ -135,6 +135,26 @@ async function runCommand(ctx) {
 
   try {
     const helpers = makeReplyHelpers(ctx);
+    const isOwner = Boolean(ctx?.isOwner || ctx?.isSessionOwner || ctx?.isBotOwner);
+
+    // Enforce permissions here as a second boundary, including when a command
+    // is invoked through an alias or by another internal caller.
+    if (command.ownerOnly === true && !isOwner) {
+      await helpers.replyError('This command is available to the bot owner only.');
+      return true;
+    }
+    if ((command.adminOnly === true || command.groupAdminOnly === true) && !ctx?.isGroupAdmin && !isOwner) {
+      await helpers.replyError('This command is only available to group admins.');
+      return true;
+    }
+    if (command.botAdminOnly === true && !ctx?.isBotGroupAdmin && !isOwner) {
+      await helpers.replyError('This command requires the bot to be a group admin.');
+      return true;
+    }
+    if (command.groupOnly === true && !ctx?.isGroup) {
+      await helpers.replyError('This command can only be used in groups.');
+      return true;
+    }
 
     // React to the command message with an emoji (fire-and-forget, never blocks)
     if (String(process.env.COMMAND_REACT || 'true').toLowerCase() !== 'false' && ctx.sock && ctx.msg && ctx.msg.key) {

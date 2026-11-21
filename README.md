@@ -33,7 +33,7 @@ One bot = one WhatsApp number. No website, no Telegram.
 2. Set your number in **Environment Variables** (`WHATSAPP_NUMBER`), e.g. `255712345678`. No `+`, no spaces.
 3. Open the **Logs**. The bot will show an **8-character PAIR CODE**.
 4. On WhatsApp: **Settings → Linked Devices → Link a Device → Link with phone number instead**, then enter the code.
-5. Once linked, your number automatically follows the Phonephix Pro channel.
+5. Once linked, the bot restores the saved session after restarts when persistent storage is configured. Channel following is disabled unless explicitly enabled.
 
 ---
 
