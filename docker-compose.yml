@@ -1,0 +1,35 @@
+services:
+  peramiho-bot:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: peramiho-bot
+    restart: unless-stopped
+    init: true
+    stop_grace_period: 30s
+    env_file:
+      - .env
+    environment:
+      NODE_ENV: production
+      PORT: "3000"
+      DATA_DIR: /data
+      LOG_LEVEL: ${LOG_LEVEL:-warn}
+    volumes:
+      - peramiho_bot_data:/data
+    # Keep the health/keep-alive port private to the host.
+    ports:
+      - "127.0.0.1:3000:3000"
+    healthcheck:
+      test:
+        - CMD
+        - node
+        - -e
+        - "fetch('http://127.0.0.1:3000/').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 90s
+
+volumes:
+  peramiho_bot_data:
+    name: peramiho_bot_data

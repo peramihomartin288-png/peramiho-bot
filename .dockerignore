@@ -1,0 +1,10 @@
+.git
+.github
+node_modules
+data
+temp
+media
+.env
+.env.*
+!.env.example
+npm-debug.log*
