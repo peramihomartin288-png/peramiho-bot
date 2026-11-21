@@ -1,0 +1,12 @@
+node_modules/
+.env
+data/
+temp/
+*.log
+.env
+*.session
+session/
+auth_info/
+database/*.json
+node_modules/
+*.log
